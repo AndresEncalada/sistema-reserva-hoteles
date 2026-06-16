@@ -1,0 +1,43 @@
+# =========================
+# Entornos Virtuales
+# =========================
+.venv/
+venv/
+env/
+
+# =========================
+# Variables de Entorno y Secretos
+# =========================
+.env
+.env.*
+*.secret
+
+# =========================
+# Python Cache y Bytecode
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# =========================
+# Bases de Datos y Logs
+# =========================
+*.log
+*.sqlite3
+postgres_data/
+
+# =========================
+# Configuraciones de IDE / OS
+# =========================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# =========================
+# Testing y Cobertura
+# =========================
+.pytest_cache/
+.coverage
+htmlcov/
