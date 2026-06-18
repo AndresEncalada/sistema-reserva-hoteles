@@ -5,6 +5,11 @@ from core.security import SECRET_KEY, ALGORITHM
 from models.user_schema import Role
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
+credentials_exception = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="No se pudieron validar las credenciales",
+    headers={"WWW-Authenticate": "Bearer"},
+)
 
 async def get_current_user_token(token: str = Depends(oauth2_scheme)) -> dict:
     try:

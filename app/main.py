@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from controllers.auth_controller import router as auth_router
+from controllers.habitacion_controller import router as habitacion_router
 
 app = FastAPI(
     title="API de Reservas de Hotel",
@@ -9,6 +10,7 @@ app = FastAPI(
 
 # Registramos el controlador de autenticación
 app.include_router(auth_router)
+app.include_router(habitacion_router)
 
 @app.get("/")
 async def root():
