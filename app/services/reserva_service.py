@@ -7,8 +7,7 @@ class ReservaService:
         if not reserva:
             return None
         
-        # Aquí conectarías tu servicio de Email, SMS o WhatsApp en el futuro
-        # Por ahora, simulamos la acción:
+        # Simulacion
         print(f"[NOTIFICACIÓN] Enviando alerta al cliente {reserva.usuario_id}: 'Tu reserva #{reserva.id} está pendiente de pago.'")
         
         return {"status": "notificado", "mensaje": "Notificación de pago pendiente enviada con éxito"}
