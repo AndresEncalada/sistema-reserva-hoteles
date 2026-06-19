@@ -15,7 +15,7 @@ class ReservaRepository:
         if reserva:
             reserva.estado = "cancelada"
             
-            # Liberamos la habitación automáticamente al cancelar
+            
             res_hab = await db.execute(
                 select(HabitacionModel).where(HabitacionModel.id == reserva.habitacion_id)
             )
