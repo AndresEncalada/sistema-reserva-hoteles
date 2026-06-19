@@ -9,7 +9,7 @@ from services.reserva_service import reserva_service
 
 router = APIRouter(prefix="/api/reservas", tags=["Reservas"])
 
-# ENDPOINT: Notificación de pago pendiente
+# Notificación de pago pendiente
 @router.post("/{id}/notificar-pago")
 async def notificar_pago(
     id: int,
@@ -21,7 +21,7 @@ async def notificar_pago(
         raise HTTPException(status_code=404, detail="Reserva no encontrada")
     return resultado
 
-# ENDPOINT: Cancelar una reserva
+#Cancelar una reserva
 @router.patch("/{id}/cancelar", response_model=ReservaResponse)
 async def cancelar_reserva(
     id: int,
