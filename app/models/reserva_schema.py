@@ -1,8 +1,11 @@
 from pydantic import BaseModel
-from uuid import UUID  #
+from uuid import UUID
+
+class ReservaCreate(BaseModel):
+    habitacion_id: int
 
 class ReservaBase(BaseModel):
-    usuario_id: UUID 
+    usuario_id: UUID
     habitacion_id: int
     estado: str
 

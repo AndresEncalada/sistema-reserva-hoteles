@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
@@ -33,7 +34,10 @@ async def crear_habitacion(
     db: AsyncSession = Depends(get_db),
     admin: dict = Depends(require_role(Role.ADMIN))
 ):
-    return await habitacion_service.crear_habitacion(db, datos)
+    try:
+        return await habitacion_service.crear_habitacion(db, datos)
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail=f"Ya existe una habitación con el número '{datos.numero}'")
 
 @router.patch("/{id}/estado", response_model=HabitacionResponse)
 async def cambiar_estado(
