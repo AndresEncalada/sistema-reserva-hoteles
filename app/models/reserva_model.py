@@ -1,4 +1,4 @@
-from sqlalchemy import String, ForeignKey, Date
+from sqlalchemy import String, ForeignKey, Date, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 from core.database import Base
 from datetime import date
@@ -13,3 +13,4 @@ class ReservaModel(Base):
     estado: Mapped[str] = mapped_column(String, default="pendiente")
     fecha_checkin: Mapped[date] = mapped_column(Date, nullable=True)
     fecha_checkout: Mapped[date] = mapped_column(Date, nullable=True)
+    costo_total: Mapped[int] = mapped_column(Integer, nullable=True)

@@ -1,11 +1,28 @@
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from models.habitacion_model import HabitacionModel
 from models.habitacion_schema import HabitacionCreate
 
 class HabitacionRepository:
-    async def obtener_todas(self, db: AsyncSession):
-        result = await db.execute(select(HabitacionModel))
+    async def obtener_todas(
+        self,
+        db: AsyncSession,
+        tipo: Optional[str] = None,
+        precio_min: Optional[int] = None,
+        precio_max: Optional[int] = None,
+        disponible: Optional[bool] = None,
+    ):
+        query = select(HabitacionModel)
+        if tipo is not None:
+            query = query.where(HabitacionModel.tipo == tipo)
+        if precio_min is not None:
+            query = query.where(HabitacionModel.precio >= precio_min)
+        if precio_max is not None:
+            query = query.where(HabitacionModel.precio <= precio_max)
+        if disponible is not None:
+            query = query.where(HabitacionModel.disponible == disponible)
+        result = await db.execute(query)
         return result.scalars().all()
 
     async def obtener_por_id(self, db: AsyncSession, habitacion_id: int):

@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 from enum import Enum
+from uuid import UUID
 
 class Role(str, Enum):
     USER = "user"
@@ -12,6 +13,18 @@ class UserLogin(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=6, max_length=72)
+
+class UserResponse(BaseModel):
+    id: UUID
+    email: EmailStr
+    role: Role
+
+    class Config:
+        from_attributes = True
+
+class PasswordChange(BaseModel):
+    password_actual: str
+    password_nuevo: str = Field(..., min_length=6, max_length=72)
 
 class Token(BaseModel):
     access_token: str

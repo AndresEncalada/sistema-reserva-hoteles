@@ -20,6 +20,7 @@ class ReservaBase(BaseModel):
     estado: str
     fecha_checkin: Optional[date] = None
     fecha_checkout: Optional[date] = None
+    costo_total: Optional[int] = None
 
 class ReservaResponse(ReservaBase):
     id: int

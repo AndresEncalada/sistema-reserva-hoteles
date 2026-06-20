@@ -1,10 +1,18 @@
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from repositories.habitacion_repo import habitacion_repo
 from models.habitacion_schema import HabitacionCreate
 
 class HabitacionService:
-    async def listar_habitaciones(self, db: AsyncSession):
-        return await habitacion_repo.obtener_todas(db)
+    async def listar_habitaciones(
+        self,
+        db: AsyncSession,
+        tipo: Optional[str] = None,
+        precio_min: Optional[int] = None,
+        precio_max: Optional[int] = None,
+        disponible: Optional[bool] = None,
+    ):
+        return await habitacion_repo.obtener_todas(db, tipo, precio_min, precio_max, disponible)
 
     async def obtener_habitacion(self, db: AsyncSession, habitacion_id: int):
         return await habitacion_repo.obtener_por_id(db, habitacion_id)

@@ -24,12 +24,9 @@ class DashboardService:
             select(func.count()).select_from(HabitacionModel).where(HabitacionModel.disponible == False)
         )
 
-        ingresos_resultado = await db.execute(
-            select(func.sum(HabitacionModel.precio))
-            .join(ReservaModel, ReservaModel.habitacion_id == HabitacionModel.id)
-            .where(ReservaModel.estado == "pagado")
-        )
-        ingresos_totales = ingresos_resultado.scalar() or 0
+        ingresos_totales = await db.scalar(
+            select(func.sum(ReservaModel.costo_total)).where(ReservaModel.estado == "pagado")
+        ) or 0
 
         return {
             "reservas": {

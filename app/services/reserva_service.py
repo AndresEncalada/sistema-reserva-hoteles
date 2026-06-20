@@ -1,6 +1,7 @@
 import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 from repositories.reserva_repo import reserva_repo
+from repositories.factura_repo import factura_repo
 from models.reserva_schema import ReservaCreate
 
 class ReservaService:
@@ -14,7 +15,10 @@ class ReservaService:
         return await reserva_repo.listar_por_usuario(db, usuario_id)
 
     async def marcar_pagado(self, db: AsyncSession, reserva_id: int):
-        return await reserva_repo.marcar_pagado(db, reserva_id)
+        reserva = await reserva_repo.marcar_pagado(db, reserva_id)
+        if reserva and not await factura_repo.obtener_por_reserva(db, reserva_id):
+            await factura_repo.crear(db, reserva.id, reserva.usuario_id, reserva.costo_total or 0)
+        return reserva
 
     async def enviar_notificacion_pago(self, db: AsyncSession, reserva_id: int):
         reserva = await reserva_repo.obtener_por_id(db, reserva_id)

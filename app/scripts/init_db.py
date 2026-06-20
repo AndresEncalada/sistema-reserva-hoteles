@@ -7,10 +7,10 @@ app_dir = os.path.dirname(current_dir)
 sys.path.append(app_dir)
 
 from core.database import engine, Base
-# Importamos los modelos para que SQLAlchemy sepa qué tablas crear
-from models.user_model import UserModel 
+from models.user_model import UserModel
 from models.habitacion_model import HabitacionModel
 from models.reserva_model import ReservaModel
+from models.factura_model import FacturaModel
 async def create_tables():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

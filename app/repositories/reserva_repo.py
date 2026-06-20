@@ -35,12 +35,16 @@ class ReservaRepository:
         if conflicto.scalars().first():
             return None
 
+        noches = (datos.fecha_checkout - datos.fecha_checkin).days
+        costo_total = habitacion.precio * noches
+
         reserva = ReservaModel(
             usuario_id=usuario_id,
             habitacion_id=datos.habitacion_id,
             estado="pendiente",
             fecha_checkin=datos.fecha_checkin,
             fecha_checkout=datos.fecha_checkout,
+            costo_total=costo_total,
         )
         db.add(reserva)
         await db.commit()

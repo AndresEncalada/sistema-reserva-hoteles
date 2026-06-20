@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,10 +13,14 @@ router = APIRouter(prefix="/api/habitaciones", tags=["Habitaciones"])
 
 @router.get("/", response_model=list[HabitacionResponse])
 async def listar_habitaciones(
+    tipo: Optional[str] = Query(default=None),
+    precio_min: Optional[int] = Query(default=None),
+    precio_max: Optional[int] = Query(default=None),
+    disponible: Optional[bool] = Query(default=None),
     db: AsyncSession = Depends(get_db),
     usuario_actual: dict = Depends(get_current_user_token)
 ):
-    return await habitacion_service.listar_habitaciones(db)
+    return await habitacion_service.listar_habitaciones(db, tipo, precio_min, precio_max, disponible)
 
 @router.get("/{id}", response_model=HabitacionResponse)
 async def obtener_habitacion(
