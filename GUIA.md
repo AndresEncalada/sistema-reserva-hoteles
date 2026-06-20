@@ -4,6 +4,55 @@ Esta guía explica paso a paso cómo configurar, ejecutar y probar todos los end
 
 ---
 
+## ⚠️ Cambios recientes en la base de datos
+
+> **Leer esto antes de ejecutar el proyecto.**
+
+Se realizaron cambios en la estructura de la base de datos que requieren acciones distintas dependiendo de tu situación:
+
+---
+
+### Caso A — Primera vez que ejecutas el proyecto
+
+No necesitas hacer nada especial. Al correr `uv run app/scripts/init_db.py` en el paso de configuración inicial, todas las tablas se crean correctamente con la estructura más reciente.
+
+Sigue directo a la sección **2. Configuración inicial**.
+
+---
+
+### Caso B — Ya tenías el proyecto corriendo antes de estos cambios
+
+Se agregaron columnas nuevas a la tabla `reservas` y se creó una tabla nueva `facturas`. Debes aplicar los siguientes comandos **con el servidor detenido**:
+
+**Paso 1 — Agregar columnas nuevas a la tabla `reservas`:**
+```bash
+docker exec sistema-reserva-hoteles-db-1 psql -U hotel_user -d hotel_reservations -c "ALTER TABLE reservas ADD COLUMN IF NOT EXISTS fecha_checkin DATE; ALTER TABLE reservas ADD COLUMN IF NOT EXISTS fecha_checkout DATE; ALTER TABLE reservas ADD COLUMN IF NOT EXISTS costo_total INTEGER;"
+```
+
+**Paso 2 — Crear la tabla `facturas`:**
+```bash
+uv run app/scripts/init_db.py
+```
+> `init_db.py` usa `CREATE TABLE IF NOT EXISTS`, por lo que no borra datos existentes — solo crea lo que falta.
+
+**Paso 3 — Volver a levantar el servidor:**
+```bash
+uv run uvicorn main:app --app-dir app --reload
+```
+
+---
+
+### Resumen de cambios estructurales
+
+| Tabla | Cambio | Descripción |
+|---|---|---|
+| `reservas` | Nueva columna `fecha_checkin` | Fecha de entrada (tipo DATE) |
+| `reservas` | Nueva columna `fecha_checkout` | Fecha de salida (tipo DATE) |
+| `reservas` | Nueva columna `costo_total` | Precio × noches, calculado automáticamente |
+| `facturas` | **Tabla nueva** | Se genera automáticamente al pagar una reserva |
+
+---
+
 ## 1. Requisitos previos
 
 Tener instalado en el equipo:
