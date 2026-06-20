@@ -7,7 +7,11 @@ class Role(str, Enum):
 
 class UserLogin(BaseModel):
     email: EmailStr
-    password: str = Field(..., max_length=72) 
+    password: str = Field(..., max_length=72)
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=6, max_length=72)
 
 class Token(BaseModel):
     access_token: str

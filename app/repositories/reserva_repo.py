@@ -24,12 +24,24 @@ class ReservaRepository:
         if not habitacion or not habitacion.disponible:
             return None
 
+        conflicto = await db.execute(
+            select(ReservaModel).where(
+                ReservaModel.habitacion_id == datos.habitacion_id,
+                ReservaModel.estado != "cancelada",
+                ReservaModel.fecha_checkin < datos.fecha_checkout,
+                ReservaModel.fecha_checkout > datos.fecha_checkin,
+            )
+        )
+        if conflicto.scalars().first():
+            return None
+
         reserva = ReservaModel(
             usuario_id=usuario_id,
             habitacion_id=datos.habitacion_id,
-            estado="pendiente"
+            estado="pendiente",
+            fecha_checkin=datos.fecha_checkin,
+            fecha_checkout=datos.fecha_checkout,
         )
-        habitacion.disponible = False
         db.add(reserva)
         await db.commit()
         await db.refresh(reserva)
@@ -49,12 +61,6 @@ class ReservaRepository:
         reserva = result.scalars().first()
         if reserva:
             reserva.estado = "cancelada"
-            res_hab = await db.execute(
-                select(HabitacionModel).where(HabitacionModel.id == reserva.habitacion_id)
-            )
-            habitacion = res_hab.scalars().first()
-            if habitacion:
-                habitacion.disponible = True
             await db.commit()
             await db.refresh(reserva)
         return reserva
