@@ -6,6 +6,9 @@ class HabitacionBase(BaseModel):
     precio: int
     disponible: bool = True
 
+class HabitacionCreate(HabitacionBase):
+    pass
+
 class HabitacionResponse(HabitacionBase):
     id: int
 

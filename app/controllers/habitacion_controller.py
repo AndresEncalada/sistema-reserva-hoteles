@@ -4,12 +4,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import get_db
 from models.user_schema import Role
 from controllers.dependencies import get_current_user_token, require_role
-from models.habitacion_schema import HabitacionResponse
+from models.habitacion_schema import HabitacionCreate, HabitacionResponse
 from services.habitacion_service import habitacion_service
 
 router = APIRouter(prefix="/api/habitaciones", tags=["Habitaciones"])
 
-# ENDPOINT 1: Listar habitaciones Cliente
 @router.get("/", response_model=list[HabitacionResponse])
 async def listar_habitaciones(
     db: AsyncSession = Depends(get_db),
@@ -17,7 +16,25 @@ async def listar_habitaciones(
 ):
     return await habitacion_service.listar_habitaciones(db)
 
-#ENDPOINT 2: Cambiar estado Solo Admin
+@router.get("/{id}", response_model=HabitacionResponse)
+async def obtener_habitacion(
+    id: int,
+    db: AsyncSession = Depends(get_db),
+    usuario_actual: dict = Depends(get_current_user_token)
+):
+    habitacion = await habitacion_service.obtener_habitacion(db, id)
+    if not habitacion:
+        raise HTTPException(status_code=404, detail="Habitación no encontrada")
+    return habitacion
+
+@router.post("/", response_model=HabitacionResponse, status_code=201)
+async def crear_habitacion(
+    datos: HabitacionCreate,
+    db: AsyncSession = Depends(get_db),
+    admin: dict = Depends(require_role(Role.ADMIN))
+):
+    return await habitacion_service.crear_habitacion(db, datos)
+
 @router.patch("/{id}/estado", response_model=HabitacionResponse)
 async def cambiar_estado(
     id: int,
@@ -29,3 +46,13 @@ async def cambiar_estado(
     if not habitacion:
         raise HTTPException(status_code=404, detail="Habitación no encontrada")
     return habitacion
+
+@router.delete("/{id}", status_code=204)
+async def eliminar_habitacion(
+    id: int,
+    db: AsyncSession = Depends(get_db),
+    admin: dict = Depends(require_role(Role.ADMIN))
+):
+    habitacion = await habitacion_service.eliminar_habitacion(db, id)
+    if not habitacion:
+        raise HTTPException(status_code=404, detail="Habitación no encontrada")
