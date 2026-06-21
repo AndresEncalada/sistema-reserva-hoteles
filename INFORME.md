@@ -131,19 +131,25 @@ Las siguientes capturas muestran que los servicios fueron publicados y probados 
 
 #### Vista general de Swagger
 
-![Vista general de Swagger](docs/img/swagger-general.png)
+<p align="center">
+  <img src="docs/img/swagger-general.png" alt="Vista general de Swagger" width="70%">
+</p>
 
 En esta vista se observan los módulos documentados por tags: Autenticación, Usuarios, Habitaciones, Reservas, Facturas y Dashboard. Cada sección agrupa sus endpoints, métodos HTTP, parámetros y esquemas de respuesta.
 
 #### Autorización con JWT
 
-![Autorización JWT en Swagger](docs/img/swagger-authorize.png)
+<p align="center">
+  <img src="docs/img/swagger-authorize.png" alt="Autorización JWT en Swagger" width="65%">
+</p>
 
 La ventana de autorización permite registrar el token JWT devuelto por `POST /api/auth/login`. Con esto Swagger envía el token Bearer en las peticiones protegidas.
 
 #### Endpoint administrativo de estadísticas
 
-![Endpoint de estadísticas en Swagger](docs/img/estadisticas.png)
+<p align="center">
+  <img src="docs/img/estadisticas.png" alt="Endpoint de estadísticas en Swagger" width="70%">
+</p>
 
 La captura evidencia el consumo de `/api/dashboard/estadisticas`, endpoint protegido para administradores. Este servicio devuelve totales de reservas, habitaciones disponibles/ocupadas e ingresos calculados desde la base de datos.
 
