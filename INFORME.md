@@ -12,7 +12,7 @@
 
 **Proyecto:** API REST para la gestión de reservas de hotel
 
-**Repositorio:** `git@github.com:AndresEncalada/sistema-reserva-hoteles.git`
+**Repositorio:** `https://github.com/AndresEncalada/sistema-reserva-hoteles`
 
 ## 1. Resumen
 
