@@ -6,10 +6,61 @@ from controllers.dashboard_controller import router as dashboard_router
 from controllers.factura_controller import router as factura_router
 from controllers.usuario_controller import router as usuario_router
 
+description = """
+API backend para gestionar reservas de hotel.
+
+Funcionalidades principales:
+
+- Autenticacion con JWT.
+- Control de acceso por roles: `admin` y `user`.
+- Gestion de usuarios, habitaciones, reservas y facturas.
+- Dashboard administrativo con estadisticas generales.
+
+Uso en Swagger:
+
+1. Ejecutar `POST /api/auth/login` con las credenciales de prueba.
+2. Copiar el `access_token` retornado.
+3. Pulsar `Authorize` y pegar el token con formato Bearer.
+"""
+
+tags_metadata = [
+    {
+        "name": "Autenticación",
+        "description": "Registro e inicio de sesion. Devuelve tokens JWT para consumir endpoints protegidos.",
+    },
+    {
+        "name": "Usuarios",
+        "description": "Consulta de perfil, cambio de password y administracion de usuarios.",
+    },
+    {
+        "name": "Habitaciones",
+        "description": "Busqueda, consulta y administracion de habitaciones del hotel.",
+    },
+    {
+        "name": "Reservas",
+        "description": "Creacion, consulta, pago, notificacion y cancelacion de reservas.",
+    },
+    {
+        "name": "Facturas",
+        "description": "Consulta de facturas generadas a partir de reservas pagadas.",
+    },
+    {
+        "name": "Dashboard",
+        "description": "Indicadores administrativos de reservas, habitaciones e ingresos.",
+    },
+]
+
 app = FastAPI(
     title="API de Reservas de Hotel",
-    description="Backend para el sistema de reservas",
-    version="1.0.0"
+    description=description,
+    version="1.0.0",
+    contact={
+        "name": "Equipo Sistema de Reserva de Hoteles",
+    },
+    openapi_tags=tags_metadata,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
 )
 
 app.include_router(auth_router)
