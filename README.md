@@ -6,23 +6,31 @@ Este repositorio contiene el backend del sistema de reservas de hotel, construid
 
 Para evitar problemas de dependencias, utilizamos `uv` y contenedores para la base de datos. Ejecute los siguientes comandos en su terminal (asegúrese de tener Docker corriendo):
 
-1. **Sincronizar el entorno de Python:**
+1. **Crear el archivo de variables de entorno:**
+   ```bash
+   cp .env.example .env
+   ```
+2. **Sincronizar el entorno de Python:**
    ```bash
    uv sync
    ```
-2. **Levantar PostgreSQL:**
+3. **Levantar PostgreSQL:**
    ```bash
    docker compose up -d
    ```
-3. **Crear las tablas en la base de datos:**
+4. **Crear las tablas en la base de datos:**
    ```bash
    uv run app/scripts/init_db.py
    ```
-4. **Sembrar usuarios de prueba:**
+5. **Sembrar usuarios de prueba:**
    ```bash
    uv run app/scripts/seed_users.py
    ```
-5. **Iniciar el servidor en modo desarrollo:**
+6. **Opcional: cargar datos demo adicionales:**
+   ```bash
+   uv run app/scripts/seed_demo_data.py
+   ```
+7. **Iniciar el servidor en modo desarrollo:**
    ```bash
    uv run uvicorn main:app --app-dir app --reload
    ```
@@ -83,6 +91,12 @@ No necesita Postman. FastAPI autogenera la documentación y la interfaz de prueb
 2. Use el endpoint `POST /api/auth/login` con un usuario de prueba para obtener un `access_token`.
 3. Haga clic en el botón superior **Authorize** (el ícono del candado) y pegue el token.
 4. Pruebe sus propios endpoints directamente desde la página.
+
+También está disponible:
+* **ReDoc:** `http://127.0.0.1:8000/redoc`
+* **OpenAPI JSON:** `http://127.0.0.1:8000/openapi.json`
+
+El informe técnico completo del proyecto está en [`INFORME.md`](./INFORME.md).
 
 ---
 
