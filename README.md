@@ -1,117 +1,96 @@
 # API Sistema de Reservas de Hotel
 
-Este repositorio contiene el backend del sistema de reservas de hotel, construido con **FastAPI**. Actualmente, incluye la base de datos configurada, el entorno gestionado con `uv` y el **módulo de autenticación (Login y Roles)** completamente funcional.
+Este repositorio contiene el backend de un sistema de reservas de hotel, desarrollado con el framework FastAPI en Python. El sistema expone una interfaz de programación de aplicaciones (API) RESTful diseñada para gestionar operaciones de hospedaje, facturación y administración, integrando seguridad mediante JSON Web Tokens (JWT) y Control de Acceso Basado en Roles (RBAC).
 
-## 1. Configuración del Entorno (Primeros Pasos)
+## 1. Arquitectura y Tecnologías
 
-Para evitar problemas de dependencias, utilizamos `uv` y contenedores para la base de datos. Ejecute los siguientes comandos en su terminal (asegúrese de tener Docker corriendo):
+El proyecto implementa una arquitectura basada en capas siguiendo el patrón **MRSC** (Modelos, Repositorios, Servicios y Controladores), lo cual garantiza una clara separación de responsabilidades y facilita la mantenibilidad del código.
 
-1. **Crear el archivo de variables de entorno:**
-   ```bash
-   cp .env.example .env
-   ```
-2. **Sincronizar el entorno de Python:**
-   ```bash
-   uv sync
-   ```
-3. **Levantar PostgreSQL:**
-   ```bash
-   docker compose up -d
-   ```
-4. **Crear las tablas en la base de datos:**
-   ```bash
-   uv run app/scripts/init_db.py
-   ```
-5. **Sembrar usuarios de prueba:**
-   ```bash
-   uv run app/scripts/seed_users.py
-   ```
-6. **Opcional: cargar datos demo adicionales:**
-   ```bash
-   uv run app/scripts/seed_demo_data.py
-   ```
-7. **Iniciar el servidor en modo desarrollo:**
-   ```bash
-   uv run uvicorn main:app --app-dir app --reload
-   ```
+* **Framework Web:** FastAPI (con validación de datos a través de Pydantic).
+* **Gestor de Paquetes y Entorno:** uv (para resolución rápida de dependencias orientada a Python 3.12+).
+* **Base de Datos:** PostgreSQL 15 (desplegado mediante Docker).
+* **ORM:** SQLAlchemy 2.0 en modo asíncrono, operando con el driver asyncpg.
+* **Seguridad y Autenticación:** Implementación nativa de JWT (pyjwt) y hashing de contraseñas mediante bcrypt (sin passlib).
+* **Gestión de Configuración:** pydantic-settings para el manejo de variables de entorno.
 
-> **Credenciales de prueba disponibles:**
-> * **Administrador:** `admin@hotel.com` / `admin123`
-> * **Huésped:** `huesped@hotel.com` / `huesped123`
+### Módulos Principales
+La API está segmentada en los siguientes módulos funcionales:
+* **Autenticación:** Generación y validación de tokens JWT.
+* **Usuarios:** Gestión de perfiles y credenciales de acceso.
+* **Habitaciones:** Catálogo y disponibilidad de habitaciones.
+* **Reservas:** Ciclo de vida de las reservas (creación, confirmación, cancelación).
+* **Facturas:** Registro financiero asociado a las reservas.
+* **Dashboard:** Indicadores y métricas agregadas para la administración.
 
----
+## 2. Estructura de Directorios
 
-## 2. Autenticación y Manejo de Roles (RBAC)
+La estructura del código fuente está organizada dentro del directorio app/ para aislar la lógica de la aplicación de la configuración del entorno y las dependencias:
 
-El sistema utiliza **JWT (JSON Web Tokens)**. Cuando un usuario hace login exitosamente, el servidor devuelve un token cifrado que contiene su `email` y su `rol` (`admin` o `user`). 
-
-Para proteger los endpoints que se desarrollen (Dashboards, Reservas, etc.), **no necesita reescribir lógica de seguridad**. Solo deben usar las dependencias ya inyectables que se encuentran en `app/controllers/dependencies.py`.
-
-### A. Endpoints para cualquier usuario logueado (Huéspedes y Admins)
-Para extraer los datos del usuario autenticado, importe y use `get_current_user_token`.
-
-```python
-from fastapi import APIRouter, Depends
-# Nota: Siempre usar importaciones absolutas desde 'app.'
-from app.controllers.dependencies import get_current_user_token
-
-router = APIRouter(prefix="/api/reservas")
-
-@router.post("/crear")
-async def crear_reserva(usuario: dict = Depends(get_current_user_token)):
-    # La variable 'usuario' es un diccionario extraído del JWT
-    correo_usuario = usuario["email"]
-    rol_usuario = usuario["role"]
-    
-    return {"mensaje": f"Reserva iniciada para el correo: {correo_usuario}"}
+```text
+sistema-reserva-hoteles/
+├── app/
+│   ├── controllers/      # Controladores que definen las rutas y endpoints de la API (FastAPI Routers)
+│   ├── core/             # Configuraciones globales (Conexión a BD, manejo de JWT y settings)
+│   ├── models/           # Definición de tablas ORM (SQLAlchemy) y esquemas de validación (Pydantic)
+│   ├── repositories/     # Capa de acceso a datos (Transacciones directas con la base de datos)
+│   ├── scripts/          # Scripts de inicialización y población de datos de prueba (Seeders)
+│   ├── services/         # Lógica de negocio que orquesta la comunicación entre repositorios y controladores
+│   └── main.py           # Punto de entrada de la aplicación y registro de rutas
+├── docs/                 # Recursos gráficos y documentación adicional
+├── .env.example          # Plantilla con las variables de entorno requeridas
+├── docker-compose.yml    # Definición de servicios para infraestructura local (Base de datos PostgreSQL)
+├── pyproject.toml        # Declaración de metadatos del proyecto y dependencias de Python
+└── README.md             # Documentación principal del proyecto
 ```
+## 3. Configuración del Entorno de Desarrollo
 
-### B. Endpoints Exclusivos para el Personal (Solo Admins)
-Para los módulos de administración (Dashboards), use `require_role(Role.ADMIN)`. FastAPI se encargará automáticamente de bloquear (Error 403) a los huéspedes que intenten acceder.
+El siguiente procedimiento describe los pasos necesarios para desplegar el entorno local de desarrollo. Se requiere tener instalados uv y docker (con docker compose).
 
-```python
-from fastapi import APIRouter, Depends
-from app.models.user_schema import Role
-from app.controllers.dependencies import require_role
+**1. Configuración de Variables de Entorno**
+Crear una copia del archivo de configuración para adaptar las credenciales locales:
+cp .env.example .env
 
-router = APIRouter(prefix="/api/dashboard")
+**2. Instalación de Dependencias**
+Sincronizar el entorno virtual de Python utilizando el gestor de paquetes uv:
+uv sync
 
-@router.get("/estadisticas")
-async def ver_estadisticas(admin: dict = Depends(require_role(Role.ADMIN))):
-    # Si el código llega aquí, está garantizado que el usuario es Admin
-    return {"mensaje": f"Bienvenido al panel, administrador {admin['email']}"}
-```
+**3. Despliegue de Infraestructura Local**
+Levantar el contenedor de PostgreSQL en segundo plano:
+docker compose up -d
 
----
+**4. Inicialización de la Base de Datos**
+Crear las estructuras de tablas requeridas por los modelos de SQLAlchemy:
+uv run app/scripts/init_db.py
 
-## 3. Pruebas Rápidas
+**5. Población de Datos Iniciales (Seeding)**
+Cargar los usuarios base y, opcionalmente, la información de demostración:
+uv run app/scripts/seed_users.py
+uv run app/scripts/seed_demo_data.py
 
-No necesita Postman. FastAPI autogenera la documentación y la interfaz de pruebas:
-1. Vayan a `http://127.0.0.1:8000/docs`.
-2. Use el endpoint `POST /api/auth/login` con un usuario de prueba para obtener un `access_token`.
-3. Haga clic en el botón superior **Authorize** (el ícono del candado) y pegue el token.
-4. Pruebe sus propios endpoints directamente desde la página.
+**6. Ejecución del Servidor Web**
+Iniciar el servidor de desarrollo uvicorn con recarga automática activada:
+uv run uvicorn main:app --app-dir app --reload
 
-También está disponible:
-* **ReDoc:** `http://127.0.0.1:8000/redoc`
-* **OpenAPI JSON:** `http://127.0.0.1:8000/openapi.json`
+## 4. Control de Acceso y Autorización
 
-El informe técnico completo del proyecto está en [`INFORME.md`](./INFORME.md).
+La API restringe el acceso a sus recursos de acuerdo con el rol del usuario autenticado. El flujo de autenticación opera de la siguiente manera:
 
----
+1. El cliente envía sus credenciales al endpoint de login.
+2. El servidor verifica los datos y retorna un token JWT firmado.
+3. El cliente incluye dicho token en el encabezado Authorization: Bearer <token> para subsecuentes peticiones.
 
-## 4. Contexto para LLMs (Claude Code / Agentes CLI)
+**Roles y Permisos:**
+* **Rol de Usuario (user):** Acceso permitido a endpoints generales (creación de reservas propias, consultas de perfil).
+* **Rol de Administrador (admin):** Acceso total a las métricas del sistema, facturación general y alteración de disponibilidad de habitaciones (controlado internamente mediante inyección de dependencias require_role(Role.ADMIN)).
 
-> **[LLM_CONTEXT_START]**
-> Este proyecto sigue una arquitectura Modelo-Repositorio-Servicio-Controlador (MRSC) en FastAPI asíncrono.
-> * **Gestor de paquetes:** `uv`
-> * **ORM:** SQLAlchemy 2.0 (asíncrono con `asyncpg`).
-> * **Seguridad:** Autenticación sin estado (JWT) guardando email y rol en el payload. Hasheo de contraseñas con `bcrypt` (librería nativa, no passlib). Configuración cargada vía `pydantic-settings` desde `.env`.
-> * **Modelos Base:** `UserModel` (PostgreSQL) y esquemas Pydantic en `app/models/`.
-> 
-> **Instrucciones para generar nuevos módulos:**
-> 1. Al crear un nuevo recurso (ej. `Habitacion`), genera `habitacion_model.py`, `habitacion_schema.py`, `habitacion_repo.py`, `habitacion_service.py` y `habitacion_controller.py`.
-> 2. Mantén la inyección de dependencias pasando `db: AsyncSession` desde el controlador al servicio y luego al repositorio.
-> 3. Emplea `Depends(get_current_user_token)` o `Depends(require_role(Role.ADMIN))` en los controladores para acceder al usuario de la petición.
-> 4. Asegúrate de añadir las importaciones de las nuevas tablas a `app/scripts/init_db.py` para que se generen al inicializar.
-> **[LLM_CONTEXT_END]**
+*Credenciales generadas por el script seed_users.py:*
+* Administrador: admin@hotel.com / admin123
+* Huésped: huesped@hotel.com / huesped123
+
+## 5. Documentación de la API
+
+FastAPI genera automáticamente la especificación OpenAPI del proyecto. Una vez en ejecución, la documentación interactiva y los esquemas pueden ser consultados en las siguientes rutas:
+
+* **Swagger UI:** http://127.0.0.1:8000/docs (Permite la ejecución directa de pruebas HTTP y autorización).
+* **ReDoc:** http://127.0.0.1:8000/redoc (Vista de documentación estructurada y detallada).
+* **Esquema JSON:** http://127.0.0.1:8000/openapi.json
