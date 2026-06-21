@@ -12,6 +12,8 @@
 
 **Proyecto:** API REST para la gestión de reservas de hotel
 
+**Repositorio:** `git@github.com:AndresEncalada/sistema-reserva-hoteles.git`
+
 ## 1. Resumen
 
 El presente informe describe el desarrollo de una API REST para un sistema de reserva de hoteles. La aplicación permite registrar e iniciar sesión de usuarios, administrar habitaciones, crear reservas, marcar pagos, generar facturas y consultar estadísticas administrativas.
