@@ -178,15 +178,16 @@ La captura evidencia el consumo de `/api/dashboard/estadisticas`, endpoint prote
 El sistema sigue una arquitectura por capas similar a Modelo-Repositorio-Servicio-Controlador.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "12px"}, "flowchart": {"nodeSpacing": 25, "rankSpacing": 25}}}%%
 flowchart TD
-    Client[Cliente / Swagger / Frontend] --> API[FastAPI app]
+    Client[Cliente / Swagger] --> API[FastAPI]
     API --> Controllers[Controllers]
     Controllers --> Services[Services]
-    Services --> Repositories[Repositories]
-    Repositories --> DB[(PostgreSQL)]
-    Controllers --> Schemas[Esquemas Pydantic]
-    Repositories --> Models[Modelos SQLAlchemy]
-    API --> Security[JWT + Roles]
+    Services --> Repos[Repositories]
+    Repos --> DB[(PostgreSQL)]
+    Controllers --> Schemas[Pydantic]
+    Repos --> Models[SQLAlchemy]
+    API --> Security[JWT / Roles]
 ```
 
 Responsabilidades principales:
@@ -268,21 +269,22 @@ Módulo administrativo para consultar indicadores generales.
 La seguridad se basa en JWT y control de acceso por roles.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "11px", "actorBkg": "#f8fafc"}}}%%
 sequenceDiagram
     actor Usuario
-    participant API as FastAPI
-    participant Auth as AuthService
+    participant API
+    participant Auth
     participant DB as PostgreSQL
 
-    Usuario->>API: POST /api/auth/login
-    API->>Auth: Valida credenciales
-    Auth->>DB: Busca usuario por email
-    DB-->>Auth: Usuario + password hash + rol
-    Auth-->>API: Token JWT
-    API-->>Usuario: access_token
-    Usuario->>API: Request protegido con Bearer token
-    API->>API: Decodifica JWT y valida rol
-    API-->>Usuario: Respuesta autorizada o error 401/403
+    Usuario->>API: Login
+    API->>Auth: Credenciales
+    Auth->>DB: Buscar usuario
+    DB-->>Auth: Usuario y rol
+    Auth-->>API: JWT
+    API-->>Usuario: Token
+    Usuario->>API: Petición protegida
+    API->>API: Validar JWT / rol
+    API-->>Usuario: Respuesta
 ```
 
 Reglas aplicadas:
@@ -294,6 +296,7 @@ Reglas aplicadas:
 ## 10. Modelo de datos
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "11px"}}}%%
 erDiagram
     USERS ||--o{ RESERVAS : realiza
     HABITACIONES ||--o{ RESERVAS : asignada_en
@@ -337,16 +340,17 @@ erDiagram
 ## 11. Flujo principal de reserva
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "12px"}, "flowchart": {"nodeSpacing": 25, "rankSpacing": 25}}}%%
 flowchart TD
-    A[Usuario autenticado] --> B[Consulta habitaciones disponibles]
-    B --> C[Selecciona habitación y fechas]
-    C --> D[POST /api/reservas]
-    D --> E{Habitación existe y está disponible}
+    A[Usuario] --> B[Consulta habitaciones]
+    B --> C[Elige fechas]
+    C --> D[Crear reserva]
+    D --> E{Disponible}
     E -- No --> F[Error 400]
-    E -- Si --> G[Se crea reserva pendiente]
-    G --> H[Admin marca pago]
+    E -- Si --> G[Reserva pendiente]
+    G --> H[Admin confirma pago]
     H --> I[Reserva pagada]
-    I --> J[Se genera factura si no existe]
+    I --> J[Factura]
 ```
 
 ## 12. Reglas de negocio relevantes
