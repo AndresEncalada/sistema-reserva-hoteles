@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from enum import Enum
 from uuid import UUID
 
@@ -18,9 +18,7 @@ class UserResponse(BaseModel):
     id: UUID
     email: EmailStr
     role: Role
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class PasswordChange(BaseModel):
     password_actual: str

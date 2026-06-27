@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import date
 from uuid import UUID
 
@@ -8,6 +8,4 @@ class FacturaResponse(BaseModel):
     usuario_id: UUID
     monto: int
     fecha_emision: date
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -15,3 +15,21 @@ dependencies = [
     "sqlalchemy>=2.0.51",
     "uvicorn>=0.49.0",
 ]
+
+[dependency-groups]
+dev = [
+    "coverage>=7.14.3",
+    "httpx>=0.28.1",
+    "mockito>=2.0.4",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+]
+[tool.pytest.ini_options]
+pythonpath = [
+  "app"
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore:.*httpx.*",
+    "ignore::UserWarning"
+]

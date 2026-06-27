@@ -1,4 +1,4 @@
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, ConfigDict, model_validator
 from uuid import UUID
 from datetime import date
 from typing import Optional
@@ -25,5 +25,4 @@ class ReservaBase(BaseModel):
 class ReservaResponse(ReservaBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
