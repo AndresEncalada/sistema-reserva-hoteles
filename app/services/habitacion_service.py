@@ -4,6 +4,15 @@ from repositories.habitacion_repo import habitacion_repo
 from models.habitacion_schema import HabitacionCreate
 
 class HabitacionService:
+    """
+    Servicio para gestionar la lógica de las habitaciones.
+    
+    Ejemplo de uso (Doctest):
+    >>> from services.habitacion_service import HabitacionService
+    >>> servicio = HabitacionService()
+    >>> servicio is not None
+    True
+    """
     async def listar_habitaciones(
         self,
         db: AsyncSession,
