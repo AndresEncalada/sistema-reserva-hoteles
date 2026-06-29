@@ -1,3 +1,9 @@
+"""
+Pruebas unitarias para el servicio de reservas (reserva_service).
+
+Verifica la creación de reservas y el flujo de pago, incluyendo
+la generación automática de facturas al marcar una reserva como pagada.
+"""
 import pytest
 import uuid
 from datetime import date, timedelta
@@ -7,10 +13,12 @@ from models.reserva_schema import ReservaCreate
 from services.reserva_service import reserva_service
 
 class TestReservaService:
+    """Pruebas del servicio de reservas: creación y marcado de pago con generación de factura."""
 
     @pytest.mark.asyncio
     @patch("services.reserva_service.reserva_repo")
     async def test_crear_reserva_exitosa(self, mock_reserva_repo):
+        """Verifica que crear_reserva llama al repo con los datos correctos y retorna la reserva."""
         # 1. Preparar
         usuario_id = uuid.uuid4()
         datos = ReservaCreate(
@@ -35,6 +43,7 @@ class TestReservaService:
     @patch("services.reserva_service.reserva_repo")
     @patch("services.reserva_service.factura_repo")
     async def test_marcar_pagado_crea_factura(self, mock_factura_repo, mock_reserva_repo):
+        """Verifica que al marcar una reserva como pagada se crea una factura si no existía."""
         # 1. Preparar: Simulamos la reserva que vamos a pagar
         mock_reserva = AsyncMock()
         mock_reserva.id = 100

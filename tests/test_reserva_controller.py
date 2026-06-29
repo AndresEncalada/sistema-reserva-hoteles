@@ -1,3 +1,10 @@
+"""
+Pruebas de integración para el controlador de reservas (ReservaController).
+
+Cubre la creación de reservas y el envío de notificaciones de pago,
+usando TestClient con dependencias de autenticación sobreescritas para
+simular un usuario autenticado sin necesidad de BD real.
+"""
 import pytest
 import uuid
 from datetime import date, timedelta
@@ -16,10 +23,12 @@ async def mock_get_current_user_token():
 app.dependency_overrides[get_current_user_token] = mock_get_current_user_token
 
 class TestReservaController:
+    """Pruebas del controlador de reservas: creación y notificación de pago."""
 
     @patch("controllers.reserva_controller.UserRepository")
     @patch("controllers.reserva_controller.reserva_service")
     def test_crear_reserva_exitosa(self, mock_reserva_service, MockUserRepository):
+        """Verifica que POST /api/reservas/ devuelve 201 y los datos de la reserva creada."""
         # 1. Preparar Usuario Simulado
         mock_user_repo_instance = MockUserRepository.return_value
         mock_user = AsyncMock()
@@ -57,6 +66,7 @@ class TestReservaController:
 
     @patch("controllers.reserva_controller.reserva_service")
     def test_notificar_pago_no_encontrado(self, mock_reserva_service):
+        """Verifica que notificar-pago sobre una reserva inexistente devuelve 404."""
         # Simulamos que la reserva no existe (devuelve None)
         mock_reserva_service.enviar_notificacion_pago = AsyncMock(return_value=None)
 

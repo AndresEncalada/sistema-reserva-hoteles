@@ -1,3 +1,9 @@
+"""
+Pruebas unitarias para UserRepository.
+
+Verifica que el repositorio de usuarios consulta la base de datos
+correctamente al buscar por email y al listar todos los usuarios.
+"""
 import pytest
 import uuid
 from unittest.mock import AsyncMock, MagicMock
@@ -6,8 +12,10 @@ from repositories.user_repo import UserRepository
 
 @pytest.mark.asyncio
 class TestUserRepository:
+    """Pruebas del repositorio de usuarios: búsqueda por email y listado completo."""
 
     async def test_get_user_by_email(self):
+        """Verifica que get_user_by_email retorna el usuario correcto cuando existe en la BD."""
         # 1. Preparar: Simulamos la base de datos
         mock_db = AsyncMock()
         mock_resultado = MagicMock()
@@ -30,6 +38,7 @@ class TestUserRepository:
         mock_db.execute.assert_called_once()
 
     async def test_listar_todos(self):
+        """Verifica que listar_todos devuelve todos los usuarios almacenados en la BD."""
         # 1. Preparar
         mock_db = AsyncMock()
         mock_resultado = MagicMock()

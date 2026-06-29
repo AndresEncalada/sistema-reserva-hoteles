@@ -1,3 +1,9 @@
+"""
+Pruebas unitarias para el servicio de usuarios (usuario_service).
+
+Cubre la obtención del perfil propio y la validación de negocio
+que impide que un administrador elimine su propia cuenta.
+"""
 import pytest
 import uuid
 from unittest.mock import AsyncMock, patch
@@ -9,9 +15,11 @@ from models.user_model import UserModel
 # Usamos este decorador porque nuestras funciones son asíncronas
 @pytest.mark.asyncio
 class TestUsuarioService:
+    """Pruebas del servicio de usuarios: consulta de perfil y restricción de auto-eliminación."""
 
     @patch("services.usuario_service.UserRepository")
     async def test_obtener_perfil_exitoso(self, MockUserRepository):
+        """Verifica que obtener_perfil retorna el usuario cuando el email existe en la BD."""
         # 1. Preparar el escenario (Arrange)
         mock_repo_instance = MockUserRepository.return_value
         
@@ -32,6 +40,7 @@ class TestUsuarioService:
 
     @patch("services.usuario_service.UserRepository")
     async def test_eliminar_usuario_propio_falla(self, MockUserRepository):
+        """Verifica que eliminar_usuario lanza HTTPException 400 si el admin intenta borrar su propia cuenta."""
         # 1. Preparar el escenario (Arrange)
         mock_repo_instance = MockUserRepository.return_value
         

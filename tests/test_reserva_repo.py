@@ -1,3 +1,9 @@
+"""
+Pruebas unitarias para el repositorio de reservas (reserva_repo).
+
+Verifica que las operaciones de consulta a la base de datos (obtener por ID
+y listar todas) devuelven los datos correctos usando sesiones de BD simuladas.
+"""
 import pytest
 import uuid
 from unittest.mock import AsyncMock, MagicMock
@@ -5,9 +11,11 @@ from models.reserva_model import ReservaModel
 from repositories.reserva_repo import reserva_repo
 
 class TestReservaRepo:
+    """Pruebas del repositorio de reservas: obtener por ID y listar todas."""
 
     @pytest.mark.asyncio
     async def test_obtener_por_id(self):
+        """Comprueba que obtener_por_id retorna la reserva correcta cuando existe en la BD."""
         # 1. Preparar la BD simulada
         mock_db = AsyncMock()
         mock_resultado = MagicMock()
@@ -28,6 +36,7 @@ class TestReservaRepo:
 
     @pytest.mark.asyncio
     async def test_listar_todas(self):
+        """Comprueba que listar_todas devuelve todas las reservas presentes en la BD."""
         # 1. Preparar la BD simulada
         mock_db = AsyncMock()
         mock_resultado = MagicMock()

@@ -1,3 +1,9 @@
+"""
+Pruebas de integración para el controlador de habitaciones (HabitacionController).
+
+Verifica que el listado de habitaciones es accesible públicamente y que
+la modificación de estado requiere autenticación de administrador (401/403).
+"""
 import pytest
 from httpx import AsyncClient, ASGITransport
 from unittest.mock import AsyncMock

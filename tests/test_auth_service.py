@@ -1,3 +1,10 @@
+"""
+Pruebas unitarias para AuthService.
+
+Verifica la autenticación de usuarios existentes y el rechazo
+de registros con correo duplicado, aislando la lógica del servicio
+mediante mocks del repositorio y de las funciones de seguridad.
+"""
 import pytest
 from unittest.mock import AsyncMock, patch
 from fastapi import HTTPException
@@ -11,12 +18,14 @@ from services.auth_service import AuthService
 # Lo ponemos explícito por si acaso.
 
 class TestAuthService:
+    """Pruebas del servicio de autenticación: login y registro."""
 
     @pytest.mark.asyncio
     @patch("services.auth_service.UserRepository")
     @patch("services.auth_service.verify_password")
     @patch("services.auth_service.create_access_token")
     async def test_authenticate_user_exitoso(self, mock_create_token, mock_verify_password, MockUserRepository):
+        """Comprueba que authenticate_user devuelve un Token válido cuando las credenciales son correctas."""
         # 1. Preparar (Arrange)
         mock_repo_instance = MockUserRepository.return_value
         
@@ -44,6 +53,7 @@ class TestAuthService:
     @pytest.mark.asyncio
     @patch("services.auth_service.UserRepository")
     async def test_register_user_conflicto(self, MockUserRepository):
+        """Verifica que register_user lanza HTTPException 409 si el correo ya está registrado."""
         # 1. Preparar (Arrange)
         mock_repo_instance = MockUserRepository.return_value
         

@@ -1,3 +1,10 @@
+"""
+Pruebas unitarias para FacturaService usando Mockito y unittest.IsolatedAsyncioTestCase.
+
+Cubre listar_todas, obtener_por_reserva y crear, simulando la capa de BD
+con mockito y verificando que el servicio delega correctamente al repositorio.
+También comprueba que los métodos del servicio tienen docstrings presentes.
+"""
 import unittest
 import asyncio
 import uuid

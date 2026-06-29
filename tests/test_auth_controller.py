@@ -1,3 +1,9 @@
+"""
+Pruebas de integración para el controlador de autenticación (AuthController).
+
+Cubre los endpoints POST /api/auth/login y POST /api/auth/registro,
+usando TestClient de FastAPI y mocks del servicio para aislar la capa HTTP.
+"""
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, patch
@@ -9,9 +15,11 @@ from models.user_schema import Token
 client = TestClient(app)
 
 class TestAuthController:
+    """Pruebas del controlador de autenticación: login y registro de usuarios."""
 
     @patch("controllers.auth_controller.AuthService")
     def test_login_exitoso(self, MockAuthService):
+        """Verifica que un login con credenciales válidas devuelve 200 y el token de acceso."""
         # 1. Preparar el escenario
         mock_service_instance = MockAuthService.return_value
         
@@ -35,6 +43,7 @@ class TestAuthController:
 
     @patch("controllers.auth_controller.AuthService")
     def test_registro_exitoso(self, MockAuthService):
+        """Verifica que el registro de un nuevo usuario devuelve 201 y el token generado."""
         # 1. Preparar el escenario
         mock_service_instance = MockAuthService.return_value
         

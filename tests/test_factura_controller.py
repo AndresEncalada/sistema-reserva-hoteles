@@ -1,3 +1,10 @@
+"""
+Pruebas de integración para el controlador de facturas (FacturaController).
+
+Cubre el listado de facturas (solo admin) y la consulta de factura por reserva,
+verificando control de acceso por roles (admin/user/sin token) mediante
+dependency_overrides de FastAPI y mocks del servicio.
+"""
 import pytest
 import uuid
 from datetime import date

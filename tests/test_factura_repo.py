@@ -1,3 +1,10 @@
+"""
+Pruebas unitarias para el repositorio de facturas (factura_repo).
+
+Cubre obtener_por_reserva, listar_todas y crear, verificando que
+las operaciones de BD (execute, add, commit, refresh) se invocan
+correctamente usando sesiones de BD simuladas con AsyncMock.
+"""
 import pytest
 import uuid
 from datetime import date
