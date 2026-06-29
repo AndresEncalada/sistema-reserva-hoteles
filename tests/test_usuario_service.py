@@ -2,7 +2,7 @@ import pytest
 import uuid
 from unittest.mock import AsyncMock, patch
 from fastapi import HTTPException
-from app.models.user_schema import PasswordChange
+from models.user_schema import PasswordChange
 from services.usuario_service import usuario_service
 from models.user_model import UserModel
 
