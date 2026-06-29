@@ -33,3 +33,15 @@ filterwarnings = [
     "ignore:.*httpx.*",
     "ignore::UserWarning"
 ]
+
+[tool.coverage.run]
+source = [
+    "controllers.factura_controller",
+    "services.factura_service",
+    "repositories.factura_repo",
+]
+command_line = "-m pytest tests/"
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 60
