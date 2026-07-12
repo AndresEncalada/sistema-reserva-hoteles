@@ -1,0 +1,165 @@
+Metadata-Version: 2.4
+Name: sistema-reserva-hoteles
+Version: 0.1.0
+Summary: Add your description here
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: asyncpg>=0.31.0
+Requires-Dist: bcrypt>=5.0.0
+Requires-Dist: fastapi>=0.137.1
+Requires-Dist: pydantic-settings>=2.14.1
+Requires-Dist: pydantic[email]>=2.13.4
+Requires-Dist: pyjwt>=2.13.0
+Requires-Dist: python-multipart>=0.0.32
+Requires-Dist: sqlalchemy>=2.0.51
+Requires-Dist: uvicorn>=0.49.0
+
+# API Sistema de Reservas de Hotel
+
+Sistema completo de reservas de hotel con backend en FastAPI y frontend en React.
+
+## Arquitectura
+
+El proyecto implementa una arquitectura basada en capas siguiendo el patrón **MRSC** (Modelos, Repositorios, Servicios y Controladores) para el backend, y una arquitectura de componentes reutilizables para el frontend.
+
+### Tecnologías
+
+**Backend:**
+- **Framework Web:** FastAPI con validación de datos a través de Pydantic
+- **Gestor de Paquetes:** uv (Python 3.12+)
+- **Base de Datos:** PostgreSQL 15 (Docker)
+- **ORM:** SQLAlchemy 2.0 en modo asíncrono (asyncpg)
+- **Seguridad:** JWT (pyjwt) + bcrypt
+
+**Frontend:**
+- **Framework:** React 18 con TypeScript
+- **Build Tool:** Vite
+- **Estilos:** Tailwind CSS
+- **Enrutamiento:** React Router
+- **HTTP Client:** Axios
+
+### Módulos Principales
+
+- **Autenticación:** Login y registro con JWT
+- **Usuarios:** Gestión de perfiles y credenciales
+- **Habitaciones:** Catálogo y disponibilidad
+- **Reservas:** Ciclo de vida completo de reservas
+- **Facturas:** Registro financiero
+- **Dashboard:** Métricas para administración
+
+## Estructura del Proyecto
+
+    sistema-reserva-hoteles/
+    ├── app/                          # Backend FastAPI
+    │   ├── controllers/              # Endpoints de la API
+    │   ├── core/                     # Configuraciones globales
+    │   ├── models/                   # Modelos ORM y esquemas
+    │   ├── repositories/             # Acceso a datos
+    │   ├── scripts/                  # Scripts de inicialización
+    │   ├── services/                 # Lógica de negocio
+    │   └── main.py                   # Punto de entrada
+    ├── frontend/                     # Frontend React
+    │   ├── src/
+    │   │   ├── components/           # Componentes reutilizables
+    │   │   ├── pages/                # Páginas de la aplicación
+    │   │   ├── services/             # Llamadas a la API
+    │   │   ├── hooks/                # Custom hooks
+    │   │   └── types/                # Tipos TypeScript
+    │   ├── package.json
+    │   └── vite.config.ts
+    ├── docs/                         # Documentación adicional
+    ├── .env.example                  # Variables de entorno
+    ├── docker-compose.yml            # Infraestructura local
+    ├── pyproject.toml                # Dependencias Python
+    └── README.md
+
+## Configuración del Entorno de Desarrollo
+
+### Requisitos Previos
+
+- **Python 3.12+**
+- **Node.js 18+** y npm
+- **uv** (gestor de paquetes Python)
+- **Docker** y Docker Compose
+
+### 1. Configuración de Variables de Entorno
+
+    cp .env.example .env
+
+Edita el archivo `.env` con tus credenciales locales si es necesario.
+
+### 2. Instalación de Dependencias
+
+**Backend (Python):**
+
+    uv sync
+
+**Frontend (Node.js):**
+
+    cd frontend
+    npm install
+    cd ..
+
+### 3. Despliegue de Infraestructura Local
+
+    docker compose up -d
+
+### 4. Inicialización de la Base de Datos
+
+    uv run app/scripts/init_db.py
+
+### 5. Población de Datos Iniciales
+
+    uv run app/scripts/seed_users.py
+    uv run app/scripts/seed_demo_data.py
+
+### 6. Ejecución del Servidor de Desarrollo
+
+**Opción A: Sistema completo (recomendado)**
+
+    uv run start-dev
+
+Este comando inicia automáticamente:
+- Backend FastAPI en `http://localhost:8000`
+- Frontend React en `http://localhost:5173`
+- Documentación API en `http://localhost:8000/docs`
+
+Presiona `Ctrl+C` para detener ambos servicios.
+
+**Opción B: Desarrollo separado**
+
+Terminal 1 - Backend:
+
+    uv run uvicorn main:app --app-dir app --reload
+
+Terminal 2 - Frontend:
+
+    cd frontend
+    npm run dev
+
+**Opción C: Solo backend (API)**
+
+    uv run uvicorn main:app --app-dir app --reload
+
+La API estará disponible en `http://localhost:8000` con documentación en `http://localhost:8000/docs`.
+
+### 7. Construcción para Producción
+
+    # Construir el frontend
+    cd frontend
+    npm run build
+    cd ..
+    
+    # El backend servirá automáticamente el frontend desde app/main.py
+    uv run uvicorn main:app --app-dir app
+
+Accede a `http://localhost:8000` para ver la aplicación completa.
+
+## Testing
+
+    # Ejecutar tests del backend
+    uv run pytest
+    
+    # Con coverage
+    uv run coverage run -m pytest tests/
+    uv run coverage report

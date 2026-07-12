@@ -5,6 +5,10 @@ from controllers.reserva_controller import router as reserva_router
 from controllers.dashboard_controller import router as dashboard_router
 from controllers.factura_controller import router as factura_router
 from controllers.usuario_controller import router as usuario_router
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pathlib import Path
+import os
 
 description = """
 API backend para gestionar reservas de hotel.
@@ -69,6 +73,22 @@ app.include_router(reserva_router)
 app.include_router(dashboard_router)
 app.include_router(factura_router)
 app.include_router(usuario_router)
+
+# Configuración para servir el frontend en producción
+FRONTEND_DIR = Path(__file__).parent.parent / "frontend" / "dist"
+
+# Solo montar si existe el directorio (producción)
+if FRONTEND_DIR.exists():
+    # Montar archivos estáticos (CSS, JS, imágenes)
+    app.mount("/assets", StaticFiles(directory=FRONTEND_DIR / "assets"), name="assets")
+    
+    # Ruta catch-all para servir index.html (SPA routing)
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        file_path = FRONTEND_DIR / full_path
+        if file_path.exists() and file_path.is_file():
+            return FileResponse(file_path)
+        return FileResponse(FRONTEND_DIR / "index.html")
 
 @app.get("/")
 async def root():
