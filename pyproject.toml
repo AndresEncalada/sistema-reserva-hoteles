@@ -45,3 +45,14 @@ command_line = "-m pytest tests/"
 [tool.coverage.report]
 show_missing = true
 fail_under = 60
+
+[project.scripts]
+start-dev = "app.scripts.start_dev:main"
+
+[tool.uv]
+package = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+exclude = ["frontend*", "Informes*", "tests*"]
